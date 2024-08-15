@@ -1,0 +1,77 @@
+1. Qual é o total de serviços realizados por cada equipe?
+
+SELECT 
+    e.Nome_Equipe,
+    COUNT(os.id_os) AS Total_Serviços
+FROM 
+    ORDEM_DE_SERVIÇO os
+JOIN 
+    EQUIPE e ON os.equipe_id_equipe = e.id_equipe
+GROUP BY 
+    e.Nome_Equipe;
+---------------------------------------------------------------------------
+2. Qual é o valor total de peças utilizadas em cada ordem de serviço?
+SELECT 
+    os.id_os AS Ordem_de_Serviço,
+    SUM(p.Valor * osp.Quantidade) AS Valor_Total_Peças
+FROM 
+    OS_PEÇA osp
+JOIN 
+    PEÇA p ON osp.peça_id_peça = p.id_peça
+JOIN 
+    ORDEM_DE_SERVIÇO os ON osp.os_id_os = os.id_os
+GROUP BY 
+    os.id_os;
+
+---------------------------------------------------------------------------
+3. Qual mecânico tem a maior especialização em "Mecânica Geral"?
+
+SELECT 
+    m.Nome,
+    COUNT(em.equipe_id_equipe) AS Total_Equipes
+FROM 
+    MECANICO m
+JOIN 
+    EQUIPE_MECANICO em ON m.id_mecanico = em.mecanico_id_mecanico
+WHERE 
+    m.Especialidade = 'Mecânica Geral'
+GROUP BY 
+    m.Nome
+ORDER BY 
+    Total_Equipes DESC
+LIMIT 1;
+
+
+---------------------------------------------------------------------------
+
+4. Quais são os serviços realizados em ordens de serviço com status "Concluído" e seus respectivos valores?
+SELECT 
+    os.id_os AS Ordem_de_Serviço,
+    s.Descrição AS Serviço,
+    s.Valor_Mao_de_Obra
+FROM 
+    OS_SERVIÇO os
+JOIN 
+    SERVIÇO s ON os.serviço_id_serviço = s.id_serviço
+JOIN 
+    ORDEM_DE_SERVIÇO osd ON os.os_id_os = osd.id_os
+WHERE 
+    osd.Status = 'Concluído';
+
+
+---------------------------------------------------------------------------
+
+5. Qual é o cliente que possui o maior número de veículos registrados?
+
+SELECT 
+    c.Nome,
+    COUNT(v.id_veiculo) AS Total_Veículos
+FROM 
+    CLIENTE c
+JOIN 
+    VEICULO v ON c.id_cliente = v.Cliente_idCliente
+GROUP BY 
+    c.Nome
+ORDER BY 
+    Total_Veículos DESC
+LIMIT 1;

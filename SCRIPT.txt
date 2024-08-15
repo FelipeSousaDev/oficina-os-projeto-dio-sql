@@ -1,0 +1,97 @@
+-- Criar o banco de dados PROJETO-OFICINA-SQL
+CREATE DATABASE [PROJETO-OFICINA-SQL];
+GO
+
+-- Usar o banco de dados recém-criado
+USE [PROJETO-OFICINA-SQL];
+GO
+
+-- Tabela CLIENTE
+CREATE TABLE CLIENTE (
+    id_cliente INT PRIMARY KEY IDENTITY(1,1),
+    Nome VARCHAR(100) NOT NULL,
+    Endereço VARCHAR(255),
+    Telefone VARCHAR(15)
+);
+
+-- Tabela VEICULO
+CREATE TABLE VEICULO (
+    id_veiculo INT PRIMARY KEY IDENTITY(1,1),
+    Placa VARCHAR(10) NOT NULL,
+    Modelo VARCHAR(50),
+    Ano INT,
+    Cliente_idCliente INT,
+    CONSTRAINT FK_VEICULO_CLIENTE FOREIGN KEY (Cliente_idCliente) REFERENCES CLIENTE(id_cliente)
+);
+
+-- Tabela SERVIÇO
+CREATE TABLE SERVIÇO (
+    id_serviço INT PRIMARY KEY IDENTITY(1,1),
+    Descrição VARCHAR(255),
+    Valor_Mao_de_Obra DECIMAL(10, 2)
+);
+
+-- Tabela PEÇA
+CREATE TABLE PEÇA (
+    id_peça INT PRIMARY KEY IDENTITY(1,1),
+    Descrição VARCHAR(255),
+    Valor DECIMAL(10, 2)
+);
+
+-- Tabela EQUIPE
+CREATE TABLE EQUIPE (
+    id_equipe INT PRIMARY KEY IDENTITY(1,1),
+    Nome_Equipe VARCHAR(100)
+);
+
+-- Tabela MECANICO
+CREATE TABLE MECANICO (
+    id_mecanico INT PRIMARY KEY IDENTITY(1,1),
+    Nome VARCHAR(100),
+    Endereço VARCHAR(255),
+    Especialidade VARCHAR(100)
+);
+
+-- Tabela ORDEM DE SERVIÇO
+CREATE TABLE ORDEM_DE_SERVIÇO (
+    id_os INT PRIMARY KEY IDENTITY(1,1),
+    Data_Emissao DATE,
+    Valor_Total DECIMAL(10, 2),
+    Status VARCHAR(50),
+    Data_Conclusao DATE,
+    veiculo_id_veiculo INT,
+    equipe_id_equipe INT,
+    CONSTRAINT FK_OS_VEICULO FOREIGN KEY (veiculo_id_veiculo) REFERENCES VEICULO(id_veiculo),
+    CONSTRAINT FK_OS_EQUIPE FOREIGN KEY (equipe_id_equipe) REFERENCES EQUIPE(id_equipe)
+);
+
+-- Tabela OS_SERVIÇO (Relacionamento entre ORDEM_DE_SERVIÇO e SERVIÇO)
+CREATE TABLE OS_SERVIÇO (
+    os_id_os INT,
+    serviço_id_serviço INT,
+    Quantidade INT,
+    PRIMARY KEY (os_id_os, serviço_id_serviço),
+    CONSTRAINT FK_OS_SERVIÇO_OS FOREIGN KEY (os_id_os) REFERENCES ORDEM_DE_SERVIÇO(id_os),
+    CONSTRAINT FK_OS_SERVIÇO_SERVIÇO FOREIGN KEY (serviço_id_serviço) REFERENCES SERVIÇO(id_serviço)
+);
+
+-- Tabela OS_PEÇA (Relacionamento entre ORDEM_DE_SERVIÇO e PEÇA)
+CREATE TABLE OS_PEÇA (
+    os_id_os INT,
+    peça_id_peça INT,
+    Quantidade INT,
+    PRIMARY KEY (os_id_os, peça_id_peça),
+    CONSTRAINT FK_OS_PEÇA_OS FOREIGN KEY (os_id_os) REFERENCES ORDEM_DE_SERVIÇO(id_os),
+    CONSTRAINT FK_OS_PEÇA_PEÇA FOREIGN KEY (peça_id_peça) REFERENCES PEÇA(id_peça)
+);
+
+-- Tabela EQUIPE_MECANICO (Relacionamento entre EQUIPE e MECANICO)
+CREATE TABLE EQUIPE_MECANICO (
+    equipe_id_equipe INT,
+    mecanico_id_mecanico INT,
+    Data_Inicio DATE,
+    Data_Fim DATE,
+    PRIMARY KEY (equipe_id_equipe, mecanico_id_mecanico),
+    CONSTRAINT FK_EQUIPE_MECANICO_EQUIPE FOREIGN KEY (equipe_id_equipe) REFERENCES EQUIPE(id_equipe),
+    CONSTRAINT FK_EQUIPE_MECANICO_MECANICO FOREIGN KEY (mecanico_id_mecanico) REFERENCES MECANICO(id_mecanico)
+);
